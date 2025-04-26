@@ -36,6 +36,7 @@
 #define __W_WAD__
 
 #include "doomtype.h"
+#include <stdint.h>
 
 //
 // TYPES
@@ -44,14 +45,14 @@
 typedef struct
 {
   char identification[4];                  // Should be "IWAD" or "PWAD".
-  int  numlumps;
-  int  infotableofs;
+  int32_t  numlumps;
+  int32_t  infotableofs;
 } wadinfo_t;
 
 typedef struct
 {
-  int  filepos;
-  int  size;
+  int32_t  filepos;
+  int32_t  size;
   char name[8];
 } filelump_t;
 
