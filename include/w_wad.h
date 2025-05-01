@@ -56,7 +56,11 @@ typedef struct
   char name[8];
 } filelump_t;
 
-
+#if  !defined(C7)
+#define ASSET_MEM
+#else
+#define ASSET_MEM chess_storage(PMEM)
+#endif
 // killough 4/17/98: if W_CheckNumForName() called with only
 // one argument, pass ns_global as the default namespace
 
@@ -70,7 +74,7 @@ const char* PUREFUNC W_GetNameForNum(int lump);
 int PUREFUNC W_LumpLength (int lump);
 
 // CPhipps - modified for 'new' lump locking
-const void* PUREFUNC W_CacheLumpNum (int lump);
+const void* ASSET_MEM PUREFUNC W_CacheLumpNum (int lump);
 
 // CPhipps - convenience macros
 #define W_CacheLumpName(name) W_CacheLumpNum(W_GetNumForName(name))

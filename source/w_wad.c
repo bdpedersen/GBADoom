@@ -57,6 +57,90 @@
 
 #include "global_data.h"
 
+#if 1 // #if defined(WAD_CACHE) && !defined(C7)
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+uint8_t *W_map_file(const char *filename, uint32_t *size){
+    int fd = open(filename, O_RDONLY);
+    if (fd == -1) {
+        *size = 0;
+        return NULL;
+    }
+
+    struct stat file_stat;
+    if (fstat(fd, &file_stat) == -1) {
+        close(fd);
+        *size = 0;
+        return NULL;
+    }
+
+    *size = file_stat.st_size;
+
+    uint8_t *mapped = (uint8_t *)mmap(NULL, *size, PROT_READ, MAP_PRIVATE, fd, 0);
+    if (mapped == MAP_FAILED) {
+        close(fd);
+        *size = 0;
+        return NULL;
+    }
+
+    close(fd);
+    return mapped;
+}
+#endif
+
+
+static void W_AddFile();
+static int PUREFUNC FindLumpByName(const char* name, const filelump_t** lump);
+static const filelump_t* PUREFUNC FindLumpByNum(int num);
+static uint8_t *W_map_file(const char *filename, uint32_t *size);
+
+
+// Functions that need redefinition for caching
+#if 1 // #ifdef WAD_CACHE
+// This one must read from the mapped file
+static void W_Cache_ReadData(int offset, void* dest, int length) {
+    memcpy(dest, &doom_iwad[offset], length);
+}
+
+// This one must correctly set up doom_iwad_len
+static void W_Cache_Init_Data() {
+    doom_iwad = W_map_file("../../source/iwad/doom1.giwad", &doom_iwad_len);   
+}
+#endif
+
+// Globals for caching
+#if 1 // #ifdef WAD_CACHE
+#define MAXLUMPS 1158
+
+static wadinfo_t wad_header;
+static filelump_t wad_fileinfo[MAXLUMPS];
+
+static void W_Cache_ReadHeader() {
+    W_Cache_ReadData(0, &wad_header, sizeof(wadinfo_t));
+    printf("W_Cache_ReadHeader: header.numlumps = %d\n", wad_header.numlumps);
+    if (wad_header.numlumps > MAXLUMPS) {
+        I_Error("W_Cache_ReadHeader: numlumps > MAXLUMPS");
+    }
+    W_Cache_ReadData(wad_header.infotableofs, wad_fileinfo, sizeof(filelump_t) * wad_header.numlumps);
+}
+
+static void W_Cache_Init() {
+    W_Cache_Init_Data();
+    W_Cache_ReadHeader();
+}
+
+
+
+#define HEADER() (&wad_header)
+#define FILEINFO() (&wad_fileinfo)
+#else
+#define HEADER() ((wadinfo_t*)&doom_iwad[0])
+#define FILEINFO() ((filelump_t*)&doom_iwad[HEADER()->infotableofs])
+#endif
+
 //
 // GLOBALS
 //
@@ -106,14 +190,22 @@ void ExtractFileBase (const char *path, char *dest)
 // proff - changed using pointer to wadfile_info_t
 static void W_AddFile()
 {
-    const wadinfo_t* header;
+    wadinfo_t* header;
+
+#if 1 // #ifdef WAD_CACHE
+    W_Cache_Init();
+#endif
 
     if(doom_iwad_len > 0)
     {
-        header = (wadinfo_t*)&doom_iwad[0];
+        
+        header = HEADER();
+
 
         if (strncmp(header->identification,"IWAD",4))
             I_Error("W_AddFile: Wad file doesn't have IWAD id");
+    } else {
+        I_Error("W_AddFile: Failed to map doom1.wad\n");
     }
 }
 
@@ -127,9 +219,9 @@ static int PUREFUNC FindLumpByName(const char* name, const filelump_t** lump)
 
     if(doom_iwad_len > 0)
     {
-        header = (const wadinfo_t*)&doom_iwad[0];
+        header = HEADER();
 
-        fileinfo = (filelump_t*)&doom_iwad[header->infotableofs];
+        fileinfo = FILEINFO();
 
         int_64_t nameint = 0;
         strncpy((char*)&nameint, name, 8);
@@ -167,12 +259,12 @@ static const filelump_t* PUREFUNC FindLumpByNum(int num)
 
     if(doom_iwad_len > 0)
     {
-        header = (const wadinfo_t*)&doom_iwad[0];
+        header = HEADER();
 
         if(num >= header->numlumps)
             return NULL;
 
-        fileinfo = (const filelump_t*)&doom_iwad[header->infotableofs];
+        fileinfo = FILEINFO();
 
         return &fileinfo[num];
     }

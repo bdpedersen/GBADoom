@@ -584,6 +584,8 @@ static void CheckIWAD2(const unsigned char* iwad_data, const unsigned int iwad_l
 
 static void IdentifyVersion()
 {
+    W_Init();
+
     CheckIWAD2(doom_iwad, doom_iwad_len, &_g->gamemode, &_g->haswolflevels);
 
     /* jff 8/23/98 set gamemission global appropriately in all cases
