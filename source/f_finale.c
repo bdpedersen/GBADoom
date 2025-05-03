@@ -637,7 +637,8 @@ void F_Drawer (void)
             if ( _g->gamemode == retail )
                 V_DrawNamePatch(0, 0, 0, "CREDIT", CR_DEFAULT, VPT_STRETCH);
             else
-                V_DrawNamePatch(0, 0, 0, "HELP2", CR_DEFAULT, VPT_STRETCH);
+                // Was HELP2
+                V_DrawNamePatch(0, 0, 0, "TITLEPIC", CR_DEFAULT, VPT_STRETCH);
             break;
         case 2:
             V_DrawNamePatch(0, 0, 0, "VICTORY2", CR_DEFAULT, VPT_STRETCH);

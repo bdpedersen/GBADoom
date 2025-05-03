@@ -394,7 +394,7 @@ const demostates[][4] =
         {D_DrawTitle2, "TITLEPIC"},
         {D_DrawTitle1, "TITLEPIC"},
     },
-
+/*
     {
         {G_DeferedPlayDemo, "demo1"},
         {G_DeferedPlayDemo, "demo1"},
@@ -428,7 +428,7 @@ const demostates[][4] =
         {G_DeferedPlayDemo, "demo3"},
         {G_DeferedPlayDemo, "demo3"},
     },
-
+*/
     {
         {NULL, NULL},
         {NULL, NULL},

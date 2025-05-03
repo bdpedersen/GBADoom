@@ -784,6 +784,7 @@ void G_DoCompleted (void)
 
 void G_WorldDone (void)
 {
+    Z_FreeTags(PU_LEVEL,PU_PURGELEVEL);
     _g->gameaction = ga_worlddone;
 
     if (_g->secretexit)
@@ -805,7 +806,7 @@ void G_WorldDone (void)
             break;
         }
     }
-    else if (_g->gamemap == 8)
+    else if (_g->gamemap == 1) // BDP: Was 8
         _g->gameaction = ga_victory; // cph - after ExM8 summary screen, show victory stuff
 }
 

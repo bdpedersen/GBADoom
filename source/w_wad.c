@@ -95,7 +95,6 @@ uint8_t *W_map_file(const char *filename, uint32_t *size){
 static void W_AddFile();
 static int PUREFUNC FindLumpByName(const char* name, const filelump_t** lump);
 static const filelump_t* PUREFUNC FindLumpByNum(int num);
-static uint8_t *W_map_file(const char *filename, uint32_t *size);
 
 
 // Functions that need redefinition for caching

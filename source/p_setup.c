@@ -76,7 +76,7 @@ static void P_LoadVertexes (int lump)
 static void P_LoadSegs (int lump)
 {
     int numsegs = W_LumpLength(lump) / sizeof(seg_t);
-    _g->segs = (const seg_t *)W_CacheLumpNum(lump);
+    _g->segs = (const seg_t *)W_CacheLumpNum_L(lump);
 
     if (!numsegs)
       I_Error("P_LoadSegs: no segs in level");
@@ -150,7 +150,7 @@ static void P_LoadSectors (int lump)
 static void P_LoadNodes (int lump)
 {
   numnodes = W_LumpLength (lump) / sizeof(mapnode_t);
-  nodes = W_CacheLumpNum (lump); // cph - wad lump handling updated
+  nodes = W_CacheLumpNum_L (lump); // cph - wad lump handling updated
 
   if ((!nodes) || (!numnodes))
   {
@@ -216,7 +216,7 @@ static void P_LoadLineDefs (int lump)
     int  i;
 
     _g->numlines = W_LumpLength (lump) / sizeof(line_t);
-    _g->lines = W_CacheLumpNum (lump);
+    _g->lines = W_CacheLumpNum_L (lump);
 
     _g->linedata = Z_Calloc(_g->numlines,sizeof(linedata_t),PU_LEVEL,0);
 
@@ -321,7 +321,7 @@ typedef struct linelist_t        // type used to list lines in each block
 
 static void P_LoadBlockMap (int lump)
 {
-    _g->blockmaplump = W_CacheLumpNum(lump);
+    _g->blockmaplump = W_CacheLumpNum_L(lump);
 
     _g->bmaporgx = _g->blockmaplump[0]<<FRACBITS;
     _g->bmaporgy = _g->blockmaplump[1]<<FRACBITS;
@@ -349,7 +349,7 @@ static void P_LoadBlockMap (int lump)
 static void P_LoadReject(int lumpnum)
 {
   _g->rejectlump = lumpnum + ML_REJECT;
-  _g->rejectmatrix = W_CacheLumpNum(_g->rejectlump);
+  _g->rejectmatrix = W_CacheLumpNum_L(_g->rejectlump);
 }
 
 //

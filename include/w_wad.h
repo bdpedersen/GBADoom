@@ -73,11 +73,14 @@ const char* PUREFUNC W_GetNameForNum(int lump);
 
 int PUREFUNC W_LumpLength (int lump);
 
+// BDP: Below _L to indicate that the asset must stay resident for the level
 // CPhipps - modified for 'new' lump locking
 const void* ASSET_MEM PUREFUNC W_CacheLumpNum (int lump);
+const void* ASSET_MEM PUREFUNC W_CacheLumpNum_L (int lump);
 
 // CPhipps - convenience macros
 #define W_CacheLumpName(name) W_CacheLumpNum(W_GetNumForName(name))
+#define W_CacheLumpName_L(name) W_CacheLumpNum_L(W_GetNumForName(name))
 
 void ExtractFileBase(const char *, char *);       // killough
 
